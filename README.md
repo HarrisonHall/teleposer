@@ -10,3 +10,5 @@ Designed to be deployable on heroku. Current game is deployed
 ### TODO
 * Fix table format
 * Formatting screen size
+* Add room code to player list
+* Add topics phase?
