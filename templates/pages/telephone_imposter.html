@@ -1,0 +1,45 @@
+{% extends "template.html" %}
+
+{% block script %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script>
+  var username_set = false;
+  var username = "???";
+  var user_submitting_for = "";
+  var voted_yet = false;
+  var made_vote_form = false;
+  var game_data = {{ context.get("game_data")|safe }};
+</script>
+<script type = "text/javascript" src = "{{ url_for('static', filename = 'js/telephone_imposter.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="mx-auto">
+  <div class="mx-auto mt-lg-5" id="identity_wrapper" style="width:40vw">
+	{% include "cards/identity.html" %}
+  </div>
+  <div class="mx-auto mt-lg-5" id="write_sentence_wrapper" style="width:40vw">
+	{% include "cards/write_sentence.html" %}
+  </div>
+  <div class="mx-auto mt-lg-5" id="edit_sentence_wrapper" style="width:40vw">
+	{% include "cards/edit_sentence.html" %}
+  </div>
+  <div class="mx-auto mt-lg-5" id="vote_player_wrapper" style="width:80vw">
+	{% include "cards/vote_player.html" %}
+  </div>
+  <div class="mx-auto mt-lg-5" id="ti_settings_wrapper" style="width:40vw">
+	{% include "cards/ti_settings.html" %}
+  </div>
+  <div class="mx-auto mt-lg-5" id="players_wrapper" style="width:40vw">
+	{% include "cards/players.html" %}
+  </div>
+  <div class="mx-auto mt-lg-5" id="endgame_wrapper" style="width:40vw">
+	{% include "cards/endgame.html" %}
+  </div>
+</div>
+
+{% endblock%}

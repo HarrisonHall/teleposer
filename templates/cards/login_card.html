@@ -1,0 +1,15 @@
+<div class="card text-center">
+  <div class="card-body">
+	<form action="{{ url_for('create_join_request') }}" method="post">
+	  <div class="form-group">
+		<input type="text" class="form-control" id="username" placeholder="Username" name="username" required autofocus>
+	  </div>
+	  <div class="form-group">
+		<input type="text" class="form-control" id="room_code" placeholder="Room code" name="room_code" required>
+	  </div>
+	  <div>
+		<button type="submit" value="join_create" name="submit" class="btn btn-primary">Join or Create</button>
+	  </div>
+	</form>
+  </div>
+</div>
