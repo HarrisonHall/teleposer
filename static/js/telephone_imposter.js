@@ -1,6 +1,12 @@
 // Client Side Javascript to receive numbers.
 var socket;
 var WAITING = 0, PLAYING = 1, VOTING = 2, OVER = 3;
+var made_endgame = false;
+
+// remove comma and space from string
+function rm_cs(sentence) {
+	return sentence.substring(0, sentence.length-2);
+}
 
 // Show elements based on bool
 function show_id(id, show) {
@@ -41,7 +47,7 @@ function collapse_necessary() {
 
 function update_identity() {
 	if (username == game_data.imposter) {
-		$("#identity_text").text("You are the imposter.");
+		$("#identity_text").text("You are the poser.");
 		$("#identity_text_sub").text("Try to mess the prompts up without getting caught.");
 	} else {
 		$("#identity_text").text("You are a normal player.");
@@ -54,6 +60,7 @@ function update_players() {
 	for (let i=0; i < game_data.players.length; i++) {
 		players_t += game_data.players[i] + ", ";
 	}
+	players_t = rm_cs(players_t);
 	$("#players_text").text(players_t)
 }
 
@@ -65,11 +72,15 @@ function update_write_sentence() {
 function update_edit_sentence() {
 	// Check what sentence to edit
 	let edit_sentence = false;
-	if (user_submitting_for != "") edit_sentence = true;
+	if (user_submitting_for != "") {
+		edit_sentence = true;
+		return;
+	}
 	
 	let sent_first_sentence = false;
 	if (game_data.phrases.hasOwnProperty(username)) {
 		sent_first_sentence = (game_data.phrases[username].length > 0);
+		if (!sent_first_sentence) return;
 		edit_sentence = false
 	}
 	
@@ -110,7 +121,7 @@ function update_vote_area() {
 			$("#vote_area").append("<td>"+game_data.phrases[game_data.players[j]][i]+"</td>");
 		}
 		$("#vote_area").append(
-			'<td><button type="button" class="btn btn-primary" onclick="submit_vote(\'' +
+			'<td><button type="button" class="btn btn-primary my_primary_button" onclick="submit_vote(\'' +
 				game_data.players[i] + '\')">' + game_data.players[i] + '</button></td>'
 		);
 		$("#vote_area").append("<tbody>");
@@ -121,11 +132,32 @@ function update_vote_area() {
 }
 
 function update_endgame() {
+	if (made_endgame) return;
+	if (game_data.state != OVER) return;
 	message = "";
 	for (let i=0; i < game_data.winners.length; i++)
 		message += game_data.winners[i]+", ";
-	message += "won."
+	message = rm_cs(message);
+	message += " won."
 	$("#endgame_text").text(message);
+	$("#endgame_table_area").append("<thead><tr>");
+	$("#endgame_table_area").append('<th scope="col"></th>');
+	for (let i=0; i < game_data.players.length; i++)
+		$("#endgame_table_area").append('<th scope="col">'+game_data.players[i]+'</th>');
+	$("#endgame_table_area").append("</tr></thead>");
+	$("#endgame_table_area").append("<tbody>");
+	for (let i=0; i<game_data.players.length; i++) {
+		$("#endgame_table_area").append("<tbody>");
+		$("#endgame_table_area").append("<tr>");
+		$("#endgame_table_area").append('<th scope="row">'+game_data.players[i]+'</th>');
+		for (let j=0; j<game_data.players.length; j++) {
+			$("#endgame_table_area").append("<td>"+game_data.phrases[game_data.players[j]][i]+"</td>");
+		}
+		$("#endgame_table_area").append("<tbody>");
+	    $("#endgame_table_area").append("</tr>");
+	}
+	$("#endgame_table_area").append("</tbody>");
+	made_endgame = true;
 }
 
 function objectifyForm(formArray) {
@@ -147,11 +179,15 @@ function submit_settings(event) {
 }
 
 function submit_first_sentence(event) {
+	// Clean boxes
+	//$("#write_sentence_input").val("");
+
+	// Do action
 	event.preventDefault();
 	let form = $("#write_sentence_form");
 	let formjson = objectifyForm(form.serializeArray());
 	formjson["user"] = username;
-	user_submitting_for = "";
+	//user_submitting_for = "";
 	socket.emit(
 		"ti_submit_sentence",
 		formjson
@@ -159,15 +195,20 @@ function submit_first_sentence(event) {
 }
 
 function submit_sentence(event) {
+	// Do action
 	event.preventDefault();
 	let form = $("#edit_sentence_form");
 	let formjson = objectifyForm(form.serializeArray());
 	formjson["user"] = user_submitting_for;
 	user_submitting_for = "";
+	show_id("edit_sentence_wrapper", false);
 	socket.emit(
 		"ti_submit_sentence",
 		formjson
 	);
+
+	// Clean boxes
+	$("#edit_sentence_input").val("");
 }
 
 function submit_vote(user) {
@@ -184,8 +225,16 @@ function submit_vote(user) {
 
 // When document has loaded
 $(document).ready( function() {
-    //socket = io();
-	//socket = io.connect('https://' + document.domain + ':' + location.port);
+	//Hide everything
+	show_id("players_wrapper", false);
+	show_id("ti_settings_wrapper",false);
+	show_id("write_sentence_wrapper",false);
+	show_id("edit_sentence_wrapper",false);
+	show_id("vote_player_wrapper",false);
+	show_id("identity_wrapper", false);
+	show_id("endgame_wrapper", false);
+
+	// Setup socket info
 	socket = io();
     socket.on('connect', function() {
         socket.emit('ti_connected', {});

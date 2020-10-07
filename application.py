@@ -16,7 +16,6 @@ app = Flask(__name__, template_folder="./templates", static_folder="./static")
 app.secret_key = b"imposter_telephone_secret_key"
 socketio = SocketIO(app, logger=True)
 
-
 @app.route("/")
 def index():
     return render_template(
@@ -71,9 +70,12 @@ def handle_ti_settings_update(data):
 
 @socketio.on("ti_submit_sentence")
 def handle_ti_submit_sentence(data):
-    sentence = data["sentence"]
+    sentence = ti.filter_sentence(data["sentence"])
     user_submitted_for = data["user"]
     words = sentence.split(" ")
+    if user_submitted_for == session["username"]:
+        if ti.games[session["room_code"]]["phrases"].get(session["username"], []):
+            return # User submitting twice error
     if len(words) < ti.games[session["room_code"]]["settings"]["words"]:
         flash("Not enough words")
         return

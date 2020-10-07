@@ -109,6 +109,10 @@ def calculate_phase(room_code):
         for user in games[room_code]["phrases"]:
             if len(games[room_code]["phrases"][user]) < len(games[room_code]["players"]):
                 return False
+        if team_won(room_code):
+            games[room_code]["winners"] = [player for player in games[room_code]["players"] if player != games[room_code]["imposter"]]
+            games[room_code]["state"] = OVER
+            return True
         games[room_code]["state"] = VOTING
         return True
     elif games[room_code]["state"] == VOTING:
@@ -134,3 +138,20 @@ def determine_imposter(room_code):
     if len(games[room_code]["players"]) >= 1:
         games[room_code]["imposter"] = choice(games[room_code]["players"])
     return True
+
+def filter_sentence(sentence):
+    to_remove = set()
+    sentence = sentence.lower().strip()
+    lsentence = list(sentence)
+    for letter in lsentence:
+        if letter not in (alphabet + [" "]):
+            to_remove.add(letter)
+    for letter in to_remove:
+        sentence.remove(letter)
+    return sentence
+
+def team_won(room_code):
+    for player in games[room_code]["phrases"]:
+        if games[room_code]["phrases"][player][0] == games[room_code]["phrases"][player][-1]:
+            return True
+    return False

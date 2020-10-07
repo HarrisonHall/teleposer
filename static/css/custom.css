@@ -1,0 +1,54 @@
+:root {
+	--nav-bg-color: #533747;
+	--pbtn-bg-color: #86BBBD;
+	--pbtn-border-color: #76949F;
+	--main-bg-color: #76949F;
+	--card-bg-color: #5F506B;
+}
+
+#navbar_overall {
+	background-color: var(--nav-bg-color) !important;
+}
+
+.content {
+	background-color: var(--main-bg-color) !important;
+}
+
+.body_class {
+	background-color: var(--main-bg-color) !important;
+}
+
+.small_header {
+	background-color: var(--nav-bg-color) !important;
+}
+
+.my_primary_button {
+	background-color: var(--pbtn-bg-color) !important;
+}
+
+.card_bg {
+	background-color: var(--card-bg-color) !important;
+	border-color: var(--pbtn-border-color) !important;
+}
+
+#bootrap-overrides, .list-group, list-group-item, list-group-flush {
+	background-color: var(--card-bg-color) !important;
+}
+
+.btn-primary {
+	border-color: var(--pbtn-border-color) !important;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: var(--pbtn-bg-color) !important;
+    border-color: var(--pbtn-border-color) !important;
+}
+
+.list-group-item {
+	background-color: var(--card-bg-color) !important;
+}
+
+.card-body {
+	background-color: var(--card-bg-color) !important;
+}
