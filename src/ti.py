@@ -97,7 +97,7 @@ def mixup_words(user, room_code):
     sentence = games[room_code]["phrases"][user][-1].split(" ")
     shuffle(sentence)
     for i, word in enumerate(sentence):
-        for i in range(games[room_code]["settings"]["mixup"]):
+        for j in range(games[room_code]["settings"]["mixup"]):
             word = list(word)
             word[choice(range(len(word)))] = choice(alphabet)
             word = "".join(word)
@@ -107,7 +107,7 @@ def mixup_words(user, room_code):
 def calculate_phase(room_code):
     if games[room_code]["state"] == PLAYING:
         for user in games[room_code]["phrases"]:
-            if len(games[room_code]["phrases"][user]) != len(games[room_code]["players"]):
+            if len(games[room_code]["phrases"][user]) < len(games[room_code]["players"]):
                 return False
         games[room_code]["state"] = VOTING
         return True
