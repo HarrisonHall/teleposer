@@ -12,3 +12,4 @@ Designed to be deployable on heroku. Current game is deployed
 * Formatting screen size
 * Add room code to player list
 * Add topics phase?
+* ignore caps in room code

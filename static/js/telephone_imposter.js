@@ -70,35 +70,29 @@ function update_write_sentence() {
 }
 
 function update_edit_sentence() {
-	// Check what sentence to edit
-	let edit_sentence = false;
-	if (user_submitting_for != "") {
-		edit_sentence = true;
+	// Skip if not ready
+	if (user_submitting_for != "") return;
+	if (game_data.phrases.hasOwnProperty(username)) {
+		if (game_data.phrases[username].length == 0) return;
+	} else {
 		return;
 	}
-	
-	let sent_first_sentence = false;
-	if (game_data.phrases.hasOwnProperty(username)) {
-		sent_first_sentence = (game_data.phrases[username].length > 0);
-		if (!sent_first_sentence) return;
-		edit_sentence = false
-	}
-	
-	if (!edit_sentence && sent_first_sentence) {
-		let j = 0;
-		for (let i = game_data.players.indexOf(username); i < game_data.players.length + game_data.players.indexOf(username); i++) {
-			player = game_data.players[i % game_data.players.length];
-			if (!game_data.phrases.hasOwnProperty(player)) continue;
-			if (game_data.phrases[player].length == j) {
-				edit_sentence = true;
-				user_submitting_for = player;
-				break;
-			}
-			j++;
+
+	// Find who to edit for
+	let should_edit_sentence = false;
+	for (let i = game_data.players.indexOf(username)+1, j=1; j < game_data.players.length; j++, i++) {
+		player = game_data.players[i % game_data.players.length];
+		if (!game_data.phrases.hasOwnProperty(player)) continue;
+		if (game_data.phrases[player].length == j) {
+			should_edit_sentence = true;
+			user_submitting_for = player;
+			break;
 		}
 	}
-	if (edit_sentence)
-		$("#edit_sentence_text").text("Edit this sentence: "+game_data.mixups[user_submitting_for])
+	if (should_edit_sentence)
+		$("#edit_sentence_text").text(
+			"Edit this sentence: "+game_data.mixups[user_submitting_for]
+		);
 }
 
 function update_vote_area() {
@@ -240,7 +234,6 @@ $(document).ready( function() {
         socket.emit('ti_connected', {});
     });
 	socket.on('ti_update', function(arg) {
-		console.log(arg);
 		game_data = arg;
 		if (!username_set) {
 			username_set = true;
