@@ -185,7 +185,8 @@ function submit_vote(user) {
 // When document has loaded
 $(document).ready( function() {
     //socket = io();
-	socket = io.connect('https://' + document.domain + ':' + location.port);
+	//socket = io.connect('https://' + document.domain + ':' + location.port);
+	socket = io();
     socket.on('connect', function() {
         socket.emit('ti_connected', {});
     });
