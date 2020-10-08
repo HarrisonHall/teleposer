@@ -95,6 +95,10 @@ function update_edit_sentence() {
 		);
 }
 
+function make_table(id) {
+	
+}
+
 function update_vote_area() {
 	if (game_data.state != VOTING) return;
 	if (voted_yet) return;
@@ -112,7 +116,7 @@ function update_vote_area() {
 		$("#vote_area").append("<tr>");
 		$("#vote_area").append('<th scope="row">'+game_data.players[i]+'</th>');
 		for (let j=0; j<game_data.players.length; j++) {
-			$("#vote_area").append("<td>"+game_data.phrases[game_data.players[j]][i]+"</td>");
+			$("#vote_area").append("<td>"+game_data.phrases[game_data.players[i]][(i+j)%game_data.players.length]+"</td>");
 		}
 		$("#vote_area").append(
 			'<td><button type="button" class="btn btn-primary my_primary_button" onclick="submit_vote(\'' +
@@ -138,6 +142,7 @@ function update_endgame() {
 	$("#endgame_table_area").append('<th scope="col"></th>');
 	for (let i=0; i < game_data.players.length; i++)
 		$("#endgame_table_area").append('<th scope="col">'+game_data.players[i]+'</th>');
+	$("#endgame_table_area").append('<th scope="col">Vote</th>');
 	$("#endgame_table_area").append("</tr></thead>");
 	$("#endgame_table_area").append("<tbody>");
 	for (let i=0; i<game_data.players.length; i++) {
@@ -145,8 +150,9 @@ function update_endgame() {
 		$("#endgame_table_area").append("<tr>");
 		$("#endgame_table_area").append('<th scope="row">'+game_data.players[i]+'</th>');
 		for (let j=0; j<game_data.players.length; j++) {
-			$("#endgame_table_area").append("<td>"+game_data.phrases[game_data.players[j]][i]+"</td>");
+			$("#endgame_table_area").append("<td>"+game_data.phrases[game_data.players[i]][(i+j)%game_data.players.length]+"</td>");
 		}
+		$("#endgame_table_area").append("<td>"+game_data.votes[game_data.players[i]]+"</td>");
 		$("#endgame_table_area").append("<tbody>");
 	    $("#endgame_table_area").append("</tr>");
 	}

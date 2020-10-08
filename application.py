@@ -70,9 +70,12 @@ def handle_ti_settings_update(data):
 
 @socketio.on("ti_submit_sentence")
 def handle_ti_submit_sentence(data):
+    print(data["sentence"])
     sentence = ti.filter_sentence(data["sentence"])
+    print(sentence)
     user_submitted_for = data["user"]
     words = sentence.split(" ")
+    print(words)
     if user_submitted_for == session["username"]:
         if ti.games[session["room_code"]]["phrases"].get(session["username"], []):
             return # User submitting twice error

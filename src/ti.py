@@ -24,6 +24,7 @@ def create_or_join(session, username, code):
             return ERROR
         if username not in games[code]["players"]:
             games[code]["players"].append(username)
+            games[code]["votes"][username] = ""
         # TODO join game
         return JOIN
     # Create
@@ -39,7 +40,9 @@ def create_or_join(session, username, code):
             },
             "phrases": {},
             "mixups": {},
-            "votes": {},
+            "votes": {
+                username: ""
+            },
             "winners": []
         }
         return CREATE
@@ -81,17 +84,6 @@ def submit_words(room_code, username, words, user):
     else:
         games[room_code]["phrases"][user].append(words)
     return True
-    """
-    if username not in games[room_code]["phrases"]:
-        games[room_code]["phrases"][username] = [words]
-        return True
-    for i in range(games[room_code]["players"]):
-        player = games[room_code]["players"][i]
-        if len(games[room_code]["phrases"].get(player, [])) == i:
-            games[room_code]["phrases"][username].append(words)
-            return True
-    """
-    return False
 
 def mixup_words(user, room_code):
     sentence = games[room_code]["phrases"][user][-1].split(" ")
@@ -116,18 +108,20 @@ def calculate_phase(room_code):
         games[room_code]["state"] = VOTING
         return True
     elif games[room_code]["state"] == VOTING:
-        if len(games[room_code]["votes"]) == len(games[room_code]["players"]):
-            games[room_code]["state"] = OVER
-            determine_winners(room_code)
-            return True
-        return False
+        for voter, vote in games[room_code]["votes"].items():
+            if vote == "":
+                return False
+        games[room_code]["state"] = OVER
+        determine_winners(room_code)
+        return True
+
     return False
 
 def determine_winners(room_code):
     votes = {}
     for user, vote in games[room_code]["votes"].items():
         votes[vote] = votes.get(vote, 0) + 1
-    max_count = max(votes.keys())
+    max_count = max(votes.values())
     killed = [vote for vote, count in votes.items() if count == max_count]
     if games[room_code]["imposter"] in killed:
         games[room_code]["winners"] = [player for player in games[room_code]["players"] if player not in killed]
@@ -147,8 +141,8 @@ def filter_sentence(sentence):
         if letter not in (alphabet + [" "]):
             to_remove.add(letter)
     for letter in to_remove:
-        sentence.remove(letter)
-    return sentence
+        lsentence.remove(letter)
+    return "".join(lsentence).strip()
 
 def team_won(room_code):
     for player in games[room_code]["phrases"]:
